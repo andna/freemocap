@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import ReactDOM from 'react-dom';
 import {useAppDispatch, useAppSelector} from '@/store';
 import {cameraDesiredConfigUpdated, configCopiedToAll, savedSettingsCleared} from '@/store/slices/cameras/cameras-slice';
-import {camerasConnectOrUpdate} from '@/store/slices/cameras/cameras-thunks';
+import {camerasReopenWithDesiredConfig} from '@/store/slices/cameras/cameras-thunks';
 import {selectCameras} from '@/store/slices/cameras';
 import {
     Camera,
@@ -124,6 +124,20 @@ export const CameraSettingsModal: React.FC<CameraSettingsModalProps> = ({camera,
                     />
                 </Row>
 
+                <Row label="Framerate">
+                    <SegmentedControl
+                        options={[
+                            {label: 'Auto', value: '-1'},
+                            {label: '30', value: '30'},
+                            {label: '60', value: '60'},
+                        ]}
+                        value={config.framerate <= 0 ? '-1' : String(Math.round(config.framerate))}
+                        onChange={v => handleConfigChange({framerate: Number(v)})}
+                        size="sm"
+                        className="segmented-control-sm bg-darkgray"
+                    />
+                </Row>
+
                 {/* Exposure mode */}
                 <Row label="Exposure">
                     <NameDropdownSelector
@@ -161,7 +175,7 @@ export const CameraSettingsModal: React.FC<CameraSettingsModalProps> = ({camera,
                     <button
                         className="button sm br-1 flex-1"
                         style={{background: 'var(--color-text-primary)', color: 'var(--color-bg-primary)'}}
-                        onClick={() => dispatch(camerasConnectOrUpdate())}
+                        onClick={() => dispatch(camerasReopenWithDesiredConfig())}
                         title="Update camera settings"
                     >
                         <p className="text md" style={{color: 'var(--color-bg-primary)'}}>Update Settings</p>

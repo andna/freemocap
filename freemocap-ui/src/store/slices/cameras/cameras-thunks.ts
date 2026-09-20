@@ -134,9 +134,6 @@ export const camerasConnectOrUpdate = createAsyncThunk<
             dispatch(recommendExposureSent());
         }
 
-        // RECOMMEND triggers a slow backend algorithm; give it enough time.
-        // Opening camera devices for the first time can also be much slower
-        // than re-applying config to cameras that are already running.
         const anyConnected = state.cameras.cameras.some(c => c.connectionStatus === 'connected');
         const timeoutMs = hasRecommend ? 60_000 : anyConnected ? 3_000 : 15_000;
         const controller = new AbortController();
@@ -173,6 +170,22 @@ export const closeCameras = createAsyncThunk<void, void, { state: RootState }>(
         if (!response.ok) {
             throw new Error(`Failed to close cameras: ${response.statusText}`);
         }
+    }
+);
+
+export const camerasReopenWithDesiredConfig = createAsyncThunk<
+    ConnectCamerasResponse,
+    void,
+    { state: RootState }
+>(
+    'cameras/reopen',
+    async (_, { dispatch }) => {
+        try {
+            await dispatch(closeCameras()).unwrap();
+        } catch {
+        }
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        return await dispatch(camerasConnectOrUpdate()).unwrap();
     }
 );
 

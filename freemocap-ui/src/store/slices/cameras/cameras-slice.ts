@@ -174,8 +174,13 @@ export const cameraSlice = createSlice({
                     ([cameraId, config]) => {
                         const camera = state.cameras.find(cam => cam.id === cameraId);
                         if (camera) {
+                            const previousDesired = camera.desiredConfig;
                             camera.actualConfig = config as CameraConfig;
-                            camera.desiredConfig = { ...config as CameraConfig };
+                            camera.desiredConfig = {
+                                ...config as CameraConfig,
+                                framerate: previousDesired.framerate,
+                                resolution: previousDesired.resolution,
+                            };
                             camera.hasConfigMismatch = false;
                             camera.connectionStatus = 'connected';
                         }
