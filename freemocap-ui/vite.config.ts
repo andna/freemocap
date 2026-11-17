@@ -72,19 +72,19 @@ export default defineConfig(({command}) => {
             plugins: () => [react({ fastRefresh: false })],
         },
         optimizeDeps: {},
-        server: process.env.VSCODE_DEBUG
-            ? (() => {
-                const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
-                return {
-                    host: url.hostname,
-                    port: +url.port,
+        server: {
+            host: new URL(pkg.debug.env.VITE_DEV_SERVER_URL).hostname,
+            port: Number(new URL(pkg.debug.env.VITE_DEV_SERVER_URL).port),
+            strictPort: true,
+            ...(process.env.VSCODE_DEBUG
+                ? {
                     headers: {
                         "Cross-Origin-Opener-Policy": "same-origin",
                         "Cross-Origin-Embedder-Policy": "require-corp",
                     },
                 }
-            })()
-            : { host: '0.0.0.0' },
+                : {}),
+        },
         clearScreen: false,
     }
 })

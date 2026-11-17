@@ -73,6 +73,13 @@ if os.path.isdir(mp_tasks_c_path):
             binaries.append((lib_file, 'mediapipe/tasks/c'))
 hiddenimports.append('mediapipe.tasks.c')
 
+# ── skellycam (editable path installs are invisible to Analysis without this) ──
+sc_datas, sc_binaries, sc_hidden = collect_all('skellycam')
+datas.extend(sc_datas)
+binaries.extend(sc_binaries)
+hiddenimports.extend(sc_hidden)
+hiddenimports.extend(collect_submodules('skellycam'))
+
 # ── skellyforge (yaml config files needed at runtime) ──
 import skellyforge
 sf_path = os.path.dirname(skellyforge.__file__)
